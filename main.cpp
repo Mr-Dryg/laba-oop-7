@@ -1,7 +1,25 @@
+#include "include/dungeon_editor.h"
+#include "include/visitor.h"
 #include <iostream>
+#include <string>
 
-int main(void)
-{
-    std::cout << "Hello, world!";
+int main() {
+    DungeonEditor editor;
+
+    // for (int i = 0; i < 10; i++)
+    //     editor.add_any_npc();
+
+    std::cout << "Before battle:\n";
+    
+    std::string s ("save.txt");
+    editor.load_from_file(s);
+    editor.print_npcs();
+
+    std::cout << "\nBattle...\n";
+    editor.start_battle(250);
+
+    std::cout << "\nAfter battle:\n";
+    editor.print_npcs();
+
     return 0;
 }
