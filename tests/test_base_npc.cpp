@@ -2,22 +2,21 @@
 #include "../include/npc.h"
 
 TEST(BaseNPCTest, ConstructorAndBasicProperties) {
-    BaseNPC npc("TestNPC", 10, 20);
+    Knight npc("TestNPC", 10, 20);
     
     EXPECT_TRUE(npc.is_alive());
-    EXPECT_EQ(npc.is_alive(), true);
 }
 
 TEST(BaseNPCTest, PositionCalculation) {
-    BaseNPC npc1("NPC1", 0, 0);
-    BaseNPC npc2("NPC2", 3, 4);
+    Elf npc1("NPC1", 0, 0);
+    Rogue npc2("NPC2", 0, 15);
     
-    EXPECT_TRUE(npc1.is_near(npc2, 6.0));
-    EXPECT_FALSE(npc1.is_near(npc2, 4.0));
+    EXPECT_TRUE(npc1.is_near(npc2));
+    EXPECT_FALSE(npc2.is_near(npc1));
 }
 
 TEST(BaseNPCTest, Death) {
-    BaseNPC npc("TestNPC", 10, 20);
+    Elf npc("TestNPC", 10, 20);
     
     npc.dies();
     EXPECT_FALSE(npc.is_alive());

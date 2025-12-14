@@ -7,10 +7,10 @@ double BaseNPC::distance(Position pos1, Position pos2)
     return sqrt(dx*dx + dy*dy);
 }
 
-BaseNPC::BaseNPC(std::string name, int x, int y)
-    : name(name), position(Position{x, y}), alive(true) {}
+BaseNPC::BaseNPC(std::string name, int x, int y, double attack_range)
+    : name(name), position(Position{x, y}), alive(true), attack_range(attack_range) {}
     
-bool BaseNPC::is_near(BaseNPC& other, double attack_range)
+bool BaseNPC::is_near(BaseNPC& other)
 {
     return distance(position, other.position) <= attack_range;
 }

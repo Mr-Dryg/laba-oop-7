@@ -1,18 +1,17 @@
 #include "include/dungeon_editor.h"
-#include "include/visitor.h"
 #include <iostream>
 #include <string>
 
 int main() {
     DungeonEditor editor;
 
-    // for (int i = 0; i < 10; i++)
-    //     editor.add_any_npc();
+    for (int i = 0; i < 50; i++)
+        editor.add_any_npc();
 
     std::cout << "Before battle:\n";
     
     std::string s ("save.txt");
-    editor.load_from_file(s);
+    editor.save_to_file("save.txt");
     editor.print_npcs();
 
     std::cout << "\nBattle...\n";

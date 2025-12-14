@@ -7,7 +7,6 @@ set(LIB_SOURCES
   npc_factory.cpp
   observer.cpp
   random_generator.cpp
-  visitor.cpp
 )
 
 add_library(lib ${LIB_SOURCES})

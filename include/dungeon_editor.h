@@ -19,10 +19,12 @@ public:
     void add_elf();
     void add_knight();
     void add_rogue();
-    void save_to_file(std::string& filename);
-    void load_from_file(std::string& filename);
+    void save_to_file(std::string filename);
+    void load_from_file(std::string filename);
     void print_npcs();
     void start_battle(double attack_range);
+    void fight(BaseNPC& npc1, BaseNPC& npc2);
+    void murder(BaseNPC& killer, BaseNPC& victim);
 
     const std::vector<std::shared_ptr<BaseNPC>>& getNPCs() { return npcs; }
 };
