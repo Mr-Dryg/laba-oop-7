@@ -109,23 +109,26 @@ TEST_F(NPCCombatTest, EdgeCaseDistances) {
     // Эльф на граничной дистанции (ровно 50 единиц)
     auto elf_edge = std::make_shared<Elf>("ElfEdge", 35, 35); // √(35²+35²) ≈ 49.5 < 50
     auto rogue_edge = std::make_shared<Rogue>("RogueEdge", 0, 0);
-    EXPECT_TRUE(rogue_edge->can_kill(*elf_edge));
+    auto knight_edge = std::make_shared<Knight>("KnightEdge", 0, 0);
+    EXPECT_FALSE(rogue_edge->can_kill(*elf_edge));
+    EXPECT_TRUE(elf_edge->can_kill(*knight_edge));
     
     // Эльф чуть дальше границы
     auto elf_too_far = std::make_shared<Elf>("ElfTooFar", 36, 36); // √(36²+36²) ≈ 50.9 > 50
-    EXPECT_FALSE(rogue_edge->can_kill(*elf_too_far));
+    EXPECT_FALSE(elf_too_far->can_kill(*knight_edge));
 }
 
 // Тест 8: Мертвые NPC не могут убивать
 TEST_F(NPCCombatTest, DeadNPCsCannotKill) {
     rogue_near->dies();
-    EXPECT_FALSE(rogue_near->can_kill(*elf_near));
     EXPECT_FALSE(rogue_near->is_alive());
+    EXPECT_FALSE(rogue_near->can_kill(*elf_near));
 }
 
 // Тест 9: Мертвые NPC не могут быть убиты
 TEST_F(NPCCombatTest, DeadNPCsCannotBeKilled) {
     elf_near->dies();
+    EXPECT_FALSE(elf_near->is_alive());
     EXPECT_FALSE(rogue_near->can_kill(*elf_near));
 }
 

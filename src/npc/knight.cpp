@@ -11,11 +11,9 @@ void Knight::print(std::ostream& os) const
 
 bool Knight::can_kill(BaseNPC& other)
 {
-    if (is_near(other))
-    {
-        return other.can_be_defeated_by(*this);
-    }
-    return false;
+    if (!can_fight_with(other))
+        return false;
+    return other.can_be_defeated_by(*this);
 }
 
 bool Knight::can_be_defeated_by(Elf& other)

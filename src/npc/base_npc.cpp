@@ -1,10 +1,16 @@
 #include "../../include/npc.h"
+#include <iostream>
 
 double BaseNPC::distance(Position pos1, Position pos2)
 {
     int dx = pos1.x - pos2.x;
     int dy = pos1.y - pos2.y;
     return sqrt(dx*dx + dy*dy);
+}
+
+bool BaseNPC::can_fight_with(BaseNPC& other)
+{
+    return alive && other.is_alive() && name != other.get_name() && is_near(other);
 }
 
 BaseNPC::BaseNPC(std::string name, int x, int y, double attack_range)

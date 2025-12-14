@@ -30,6 +30,7 @@ protected:
     Position position;
     std::string name;
     double attack_range;
+    bool can_fight_with(BaseNPC& other);
 
 public:
     BaseNPC() = default;

@@ -11,11 +11,9 @@ void Elf::print(std::ostream& os) const
 
 bool Elf::can_kill(BaseNPC& other)
 {
-    if (is_near(other))
-    {
-        return other.can_be_defeated_by(*this);
-    }
-    return false;
+    if (!can_fight_with(other))
+        return false;
+    return other.can_be_defeated_by(*this);
 }
 
 bool Elf::can_be_defeated_by(Elf& other)
