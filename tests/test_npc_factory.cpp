@@ -13,6 +13,7 @@ TEST(NpcFactoryTest, CreateRandomNPC) {
 TEST(NpcFactoryTest, CreateSpecificNPC) {
     NpcFactory factory(100, 100);
     
+    // Используем явные значения для типов NPC
     auto elf = factory.create_npc(NpcType::elf);
     auto knight = factory.create_npc(NpcType::knight);
     auto rogue = factory.create_npc(NpcType::rogue);
@@ -32,6 +33,10 @@ TEST(NpcFactoryTest, SaveAndLoad) {
     std::string filename = "test_save.txt";
     factory.save_to_file(npcs, filename);
     
+    // Исправленная сигнатура метода
     auto loaded_npcs = factory.load_from_file(filename);
     EXPECT_EQ(loaded_npcs.size(), 2);
+    
+    // Удаляем тестовый файл
+    std::remove(filename.c_str());
 }

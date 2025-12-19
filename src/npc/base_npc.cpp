@@ -13,8 +13,10 @@ bool BaseNPC::can_fight_with(BaseNPC& other)
     return alive && other.is_alive() && name != other.get_name() && is_near(other);
 }
 
-BaseNPC::BaseNPC(std::string name, int x, int y, double attack_range)
-    : name(name), position(Position{x, y}), alive(true), attack_range(attack_range) {}
+BaseNPC::BaseNPC(std::string name, int x, int y, double attack_range, int travel_range)
+    : name(name), position(Position{x, y}),
+    alive(true), attack_range(attack_range),
+    travel_range(travel_range), rng() {}
     
 bool BaseNPC::is_near(BaseNPC& other)
 {
@@ -36,7 +38,43 @@ std::string BaseNPC::get_name(void)
     return name;
 }
 
-std::ostream& operator<<(std::ostream& os, const BaseNPC::Position& position)
+Position BaseNPC::get_position(void)
+{
+    return position;
+}
+
+MyCoroutine BaseNPC::start_move(int map_size)
+{
+    while (alive)
+    {
+        int dist = rng.get_int(1, travel_range);
+        switch (rng.get_int(1, 4))
+        {
+            case 1:
+                position.x = fmin(position.x + dist, map_size);
+                break;
+            case 2:
+                position.x = fmax(position.x - dist, 0);
+                break;
+            case 3:
+                position.y = fmin(position.y + dist, map_size);
+                break;
+            case 4:
+                position.y = fmax(position.y - dist, 0);
+                break;
+        }
+        co_yield 0;
+    }
+    co_return;
+}
+
+// void BaseNPC::move_by(int dx, int dy)
+// {
+//     position.x += dx;
+//     position.y += dy;
+// }
+
+std::ostream& operator<<(std::ostream& os, const Position& position)
 {
     return os << "(" << position.x << ", " << position.y << ")";
 }

@@ -8,11 +8,13 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 set(TEST_SOURCES
-  test_base_npc.cpp
-  test_dungeon_editor.cpp
   test_main.cpp
-  test_npc_combat.cpp
+  test_base_npc.cpp
   test_npc_factory.cpp
+  test_dungeon_editor.cpp
+  test_npc_combat.cpp
+  test_visitor.cpp
+  test_npc_movement.cpp
 )
 
 add_executable(tests ${TEST_SOURCES})

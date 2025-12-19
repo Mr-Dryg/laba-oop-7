@@ -6,12 +6,12 @@
 
 int NpcFactory::get_position_x(void)
 {
-    return rng.get_int(0, size_x);
+    return rng.get_int(0, size_x - 1);
 }
 
 int NpcFactory::get_position_y(void)
 {
-    return rng.get_int(0, size_y);
+    return rng.get_int(0, size_y - 1);
 }
 
 std::string NpcFactory::get_uname(std::string base_name)

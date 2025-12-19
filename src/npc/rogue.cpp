@@ -1,7 +1,7 @@
 #include "../../include/npc.h"
 
 Rogue::Rogue(std::string name, int x, int y)
-    : BaseNPC(name, x, y, ROGUE_ATTACK_RANGE) {};
+    : BaseNPC(name, x, y, ROGUE_ATTACK_RANGE, ROGUE_TRAVEL_RANGE) {};
 
 void Rogue::print(std::ostream& os) const
 {
@@ -29,4 +29,9 @@ bool Rogue::can_be_defeated_by(Knight& other)
 bool Rogue::can_be_defeated_by(Rogue& other)
 {
     return false;
+}
+
+std::string Rogue::get_type(Visitor& visitor)
+{
+    return visitor.visit(*this);
 }
