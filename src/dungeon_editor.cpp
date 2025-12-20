@@ -3,6 +3,9 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <map>
+#include <set>
+#include <ctime>
 
 DungeonEditor::DungeonEditor(int map_size)
     : map_size(map_size), npc_factory(map_size, map_size), rng()
@@ -72,7 +75,7 @@ void DungeonEditor::print_map()
         }
     }
 
-    std::cout << "\n  ";
+    std::cout << "\n ";
 
     for (int x = 0; x < map_size; ++x)
         std::cout << x % 10 << "";
@@ -90,19 +93,32 @@ void DungeonEditor::print_map()
     // std::cout << "Legend: E - Elf, K - Knight, R - Rogue, . - empty\n";
 }
 
-MyCoroutine DungeonEditor::start_battle()
+MyCoroutine DungeonEditor::start_battle(int battle_duration_seconds)
 {
     if (npcs.empty())
         co_return;
 
-    std::vector<MyCoroutine> npc_coroutines;
+    std::map<std::shared_ptr<BaseNPC>, MyCoroutine> npc_coroutines;
     for (auto& npc : npcs)
-        npc_coroutines.push_back(npc->start_move(map_size));
+        npc_coroutines.emplace(npc, npc->start_move(map_size));
 
+    std::time_t start_time = std::time(nullptr);
     while (!npcs.empty())
-    {
-        for (auto& npc_coro : npc_coroutines)
-            npc_coro.resume();
+    {        
+        double elapsed_seconds = std::difftime(std::time(nullptr), start_time);
+        if (elapsed_seconds >= battle_duration_seconds) {
+            break;
+        }
+
+        for (auto it = npc_coroutines.begin(); it != npc_coroutines.end();)
+        {
+            if (!it->first->is_alive() || !it->second.resume())
+                it = npc_coroutines.erase(it);
+            else
+                ++it;
+        }
+
+        co_yield 0;
 
         std::vector<std::shared_ptr<BaseNPC>> survivors;
 
@@ -124,6 +140,19 @@ MyCoroutine DungeonEditor::start_battle()
 
             if (npc1->is_alive())
                 survivors.push_back(npc1);
+        }
+
+        std::set<std::shared_ptr<BaseNPC>> survivors_set(survivors.begin(), survivors.end());
+        for (auto it = npc_coroutines.begin(); it != npc_coroutines.end();)
+        {
+            if (survivors_set.find(it->first) == survivors_set.end())
+            {
+                it = npc_coroutines.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
         }
 
         npcs = std::move(survivors);

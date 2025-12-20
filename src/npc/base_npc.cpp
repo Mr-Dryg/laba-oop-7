@@ -1,5 +1,6 @@
 #include "../../include/npc.h"
 #include <iostream>
+#include <algorithm>
 
 double BaseNPC::distance(Position pos1, Position pos2)
 {
@@ -51,16 +52,16 @@ MyCoroutine BaseNPC::start_move(int map_size)
         switch (rng.get_int(1, 4))
         {
             case 1:
-                position.x = fmin(position.x + dist, map_size);
+                position.x = std::min(position.x + dist, map_size - 1);
                 break;
             case 2:
-                position.x = fmax(position.x - dist, 0);
+                position.x = std::max(position.x - dist, 0);
                 break;
             case 3:
-                position.y = fmin(position.y + dist, map_size);
+                position.y = std::min(position.y + dist, map_size - 1);
                 break;
             case 4:
-                position.y = fmax(position.y - dist, 0);
+                position.y = std::max(position.y - dist, 0);
                 break;
         }
         co_yield 0;

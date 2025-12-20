@@ -2,6 +2,7 @@
 #include "include/npc_coroutine.h"
 #include <iostream>
 #include <string>
+#include <thread>
 
 int main() {
     DungeonEditor editor(100);
@@ -12,18 +13,21 @@ int main() {
     editor.save_to_file("save.txt");
     std::cout << "Before battle:\n";
     editor.print_npcs();
-    // editor.print_map();
 
     std::cout << "\nBattle...\n";
-    MyCoroutine coro = editor.start_battle();
-    while (coro.resume())
+    MyCoroutine battle = editor.start_battle(30);
+
+    while (true)
     {
-        // editor.print_map();
+        editor.print_map();
+        if (!battle.resume())
+            break;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
     std::cout << "\nAfter battle:\n";
+    editor.print_map();
     editor.print_npcs();
-    // editor.print_map();
 
     return 0;
 }

@@ -16,6 +16,7 @@ private:
     std::vector<std::shared_ptr<BaseNPC>> npcs;
     std::vector<std::unique_ptr<Observer>> observers;
     RandomGenerator rng;
+    void all_fight(void);
 
 public:
     DungeonEditor(int map_size);
@@ -27,7 +28,7 @@ public:
     void load_from_file(std::string filename);
     void print_npcs();
     void print_map();
-    MyCoroutine start_battle();
+    MyCoroutine start_battle(int battle_duration_seconds);
     void fight(BaseNPC& npc1, BaseNPC& npc2);
     void murder(BaseNPC& killer, BaseNPC& victim);
 

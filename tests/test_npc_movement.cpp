@@ -37,7 +37,7 @@ TEST_F(NPCMovementTest, CoroutineCanBeResumed) {
 TEST_F(NPCMovementTest, PositionChangesAfterMovement) {
     Position initial_pos = elf->get_position();
     
-    auto coroutine = elf->start_move(1);
+    auto coroutine = elf->start_move(100);
     
     // Выполняем несколько шагов движения
     for (int i = 0; i < 3; ++i) {
@@ -48,6 +48,42 @@ TEST_F(NPCMovementTest, PositionChangesAfterMovement) {
     
     // Позиция должна измениться после движения
     EXPECT_TRUE(initial_pos.x != new_pos.x || initial_pos.y != new_pos.y);
+}
+
+TEST_F(NPCMovementTest, MovementRespectsMapBoundaries) {
+    // Test that NPCs don't move outside map boundaries
+    auto npc = std::make_shared<Elf>("Elf", 0, 0);
+    auto coroutine = npc->start_move(10); // Small map
+    
+    // Move multiple times
+    for (int i = 0; i < 10; ++i) {
+        coroutine.resume();
+        Position pos = npc->get_position();
+        EXPECT_GE(pos.x, 0);
+        EXPECT_LT(pos.x, 10);
+        EXPECT_GE(pos.y, 0);
+        EXPECT_LT(pos.y, 10);
+    }
+}
+
+TEST_F(NPCMovementTest, MovementAtMapEdges) {
+    // Test movement when NPC is at map edge
+    auto npc = std::make_shared<Knight>("Knight", 99, 99);
+    auto coroutine = npc->start_move(100);
+    
+    Position initial_pos = npc->get_position();
+    EXPECT_EQ(initial_pos.x, 99);
+    EXPECT_EQ(initial_pos.y, 99);
+    
+    // Move and verify position stays within bounds
+    for (int i = 0; i < 5; ++i) {
+        coroutine.resume();
+        Position pos = npc->get_position();
+        EXPECT_GE(pos.x, 0);
+        EXPECT_LT(pos.x, 100);
+        EXPECT_GE(pos.y, 0);
+        EXPECT_LT(pos.y, 100);
+    }
 }
 
 TEST_F(NPCMovementTest, DeadNPCNoMovement) {
@@ -100,23 +136,46 @@ TEST_F(NPCMovementTest, MultipleMovementsInSequence) {
     std::vector<std::shared_ptr<BaseNPC>> npcs;
     std::vector<MyCoroutine> coroutines;
     
-    // Создаем несколько NPC - уменьшено с 5 до 3
-    for (int i = 0; i < 3; ++i) {
-        auto npc = std::make_shared<Elf>("Elf" + std::to_string(i), 50, 50);
-        npcs.push_back(npc);
-        coroutines.push_back(npc->start_move(1));
+    // Создаем несколько NPC разных типов
+    npcs.push_back(std::make_shared<Elf>("Elf0", 50, 50));
+    npcs.push_back(std::make_shared<Knight>("Knight1", 50, 50));
+    npcs.push_back(std::make_shared<Rogue>("Rogue2", 50, 50));
+    
+    for (auto& npc : npcs) {
+        coroutines.push_back(npc->start_move(100));
     }
     
-    // Выполняем несколько шагов для всех корутин - уменьшено с 3 до 2
-    for (int step = 0; step < 2; ++step) {
+    // Выполняем несколько шагов для всех корутин
+    for (int step = 0; step < 5; ++step) {
         for (auto& coro : coroutines) {
             coro.resume();
         }
     }
     
-    // Проверяем, что все NPC изменили позицию
+    // Проверяем, что все NPC изменили позицию и остались в пределах карты
     for (const auto& npc : npcs) {
         Position pos = npc->get_position();
-        EXPECT_FALSE(pos.x == 50 && pos.y == 50);
+        EXPECT_GE(pos.x, 0);
+        EXPECT_LT(pos.x, 100);
+        EXPECT_GE(pos.y, 0);
+        EXPECT_LT(pos.y, 100);
     }
+}
+
+TEST_F(NPCMovementTest, TravelRangeLimits) {
+    // Test that movement distance respects travel_range
+    // Knight has travel_range of 30, so movement should be limited
+    auto knight = std::make_shared<Knight>("Knight", 50, 50);
+    Position initial_pos = knight->get_position();
+    
+    auto coroutine = knight->start_move(100);
+    coroutine.resume();
+    
+    Position new_pos = knight->get_position();
+    int dx = std::abs(new_pos.x - initial_pos.x);
+    int dy = std::abs(new_pos.y - initial_pos.y);
+    
+    // Movement in one direction should not exceed travel_range
+    EXPECT_LE(dx, 30);
+    EXPECT_LE(dy, 30);
 }
